@@ -45,7 +45,9 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpen"/>
+    <addaction name="actionCreateDatabase"/>
+    <addaction name="actionOpenDatabase"/>
+    <addaction name="actionCloseDatabase"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -58,11 +60,17 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionCreateDatabase"/>
+   <addaction name="actionOpenDatabase"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionOpen">
+  <action name="actionOpenDatabase">
+   <property name="icon">
+    <iconset resource="access-sqlite.qrc">
+     <normaloff>:/icons/actions/document-open.png</normaloff>:/icons/actions/document-open.png</iconset>
+   </property>
    <property name="text">
-    <string>Open...</string>
+    <string>Open database...</string>
    </property>
    <property name="toolTip">
     <string>Open an existing SQLite database file</string>
@@ -82,9 +90,37 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
+  <action name="actionCreateDatabase">
+   <property name="icon">
+    <iconset resource="access-sqlite.qrc">
+     <normaloff>:/icons/actions/document-new.png</normaloff>:/icons/actions/document-new.png</iconset>
+   </property>
+   <property name="text">
+    <string>Create database...</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a new SQLite database file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionCloseDatabase">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Close database</string>
+   </property>
+   <property name="toolTip">
+    <string>Close open SQLite database</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="access-sqlite.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionQuit</sender>

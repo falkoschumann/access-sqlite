@@ -43,9 +43,14 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_actionOpen_triggered();
+    void createDatabase();
+    void openDatabase();
+    void closeDatabase();
 
 private:
+    void connectDatabase(QString& fileName);
+    void refreshDatabaseView();
+
     Ui::MainWindow *ui;
 };
 
