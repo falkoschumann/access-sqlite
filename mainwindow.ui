@@ -6,20 +6,38 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>553</width>
-    <height>416</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Access SQLite</string>
   </property>
-  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QListWidget" name="databaseView"/>
+    </item>
+   </layout>
+  </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>553</width>
+     <width>800</width>
      <height>22</height>
     </rect>
    </property>
@@ -27,7 +45,9 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpen"/>
+    <addaction name="actionCreateDatabase"/>
+    <addaction name="actionOpenDatabase"/>
+    <addaction name="actionCloseDatabase"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -40,11 +60,17 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionCreateDatabase"/>
+   <addaction name="actionOpenDatabase"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionOpen">
+  <action name="actionOpenDatabase">
+   <property name="icon">
+    <iconset resource="access-sqlite.qrc">
+     <normaloff>:/icons/actions/document-open.png</normaloff>:/icons/actions/document-open.png</iconset>
+   </property>
    <property name="text">
-    <string>Open...</string>
+    <string>Open database...</string>
    </property>
    <property name="toolTip">
     <string>Open an existing SQLite database file</string>
@@ -64,9 +90,37 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
+  <action name="actionCreateDatabase">
+   <property name="icon">
+    <iconset resource="access-sqlite.qrc">
+     <normaloff>:/icons/actions/document-new.png</normaloff>:/icons/actions/document-new.png</iconset>
+   </property>
+   <property name="text">
+    <string>Create database...</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a new SQLite database file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionCloseDatabase">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Close database</string>
+   </property>
+   <property name="toolTip">
+    <string>Close open SQLite database</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="access-sqlite.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionQuit</sender>
@@ -75,8 +129,8 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>276</x>
-     <y>207</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>276</x>

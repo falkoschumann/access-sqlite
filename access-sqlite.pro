@@ -33,7 +33,7 @@ TEMPLATE = app
 macx {
     TARGET = "Access SQLite"
 } else {
-    TARGET = access_sqlite
+    TARGET = access-sqlite
 }
 
 SOURCES += main.cpp\
@@ -42,3 +42,6 @@ SOURCES += main.cpp\
 HEADERS += mainwindow.h
 
 FORMS   += mainwindow.ui
+
+RESOURCES += \
+    access-sqlite.qrc

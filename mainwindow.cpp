@@ -33,12 +33,17 @@
 #include <QMessageBox>
 #include <QSqlDatabase>
 #include <QSqlError>
+#include <QSqlQuery>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    connect(ui->actionCreateDatabase, SIGNAL(triggered()), this, SLOT(createDatabase()));
+    connect(ui->actionOpenDatabase, SIGNAL(triggered()), this, SLOT(openDatabase()));
+    connect(ui->actionCloseDatabase, SIGNAL(triggered()), this, SLOT(closeDatabase()));
 }
 
 MainWindow::~MainWindow()
@@ -46,18 +51,74 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_actionOpen_triggered()
+void MainWindow::createDatabase()
+{
+    QString fileName = QFileDialog::getSaveFileName(
+                this,
+                tr("Create SQLite database"),
+                QDir::homePath(),
+                tr("SQLite database (*.sqlite *.db);;All files (*.*)"));
+    if (!fileName.isNull())
+        connectDatabase(fileName);
+}
+
+void MainWindow::openDatabase()
 {
     QString fileName = QFileDialog::getOpenFileName(
                 this,
                 tr("Open SQLite database"),
                 QDir::homePath(),
                 tr("SQLite database (*.sqlite *.db);;All files (*.*)"));
+    if (!fileName.isNull())
+        connectDatabase(fileName);
+}
+
+void MainWindow::connectDatabase(QString& fileName)
+{
+    closeDatabase();
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(fileName);
-    if (!db.open())
-        QMessageBox::critical(this, tr("Error opening database"), db.lastError().text());
-    else
+    if (db.open()) {
         setWindowTitle(QFile(fileName).fileName() + " - Access SQLite");
+        ui->actionCloseDatabase->setEnabled(true);
+        refreshDatabaseView();
+    } else {
+        QMessageBox::critical(this, tr("Error opening database"), db.lastError().text());
+    }
+}
+
+void MainWindow::closeDatabase()
+{
+    QString connectionName;
+    {
+        QSqlDatabase db = QSqlDatabase::database();
+        if (db.isValid()) {
+            db.close();
+            connectionName = db.connectionName();
+        }
+    }
+    if (!connectionName.isNull()) {
+        QSqlDatabase::removeDatabase(connectionName);
+        setWindowTitle("Access SQLite");
+        ui->actionCloseDatabase->setEnabled(false);
+        refreshDatabaseView();
+    }
+}
+
+void MainWindow::refreshDatabaseView()
+{
+    ui->databaseView->clear();
+
+    if (!QSqlDatabase::database().isValid())
+        return;
+
+    QSqlQuery q;
+    if (q.exec("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;")) {
+        while (q.next()) {
+            new QListWidgetItem(q.value(0).toString(), ui->databaseView);
+        }
+    } else {
+        QMessageBox::critical(this, tr("Error querying database"), q.lastError().text());
+    }
 }
