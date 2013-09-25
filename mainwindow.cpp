@@ -33,6 +33,7 @@
 #include <QMessageBox>
 #include <QSqlDatabase>
 #include <QSqlError>
+#include <QSqlQuery>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -53,11 +54,22 @@ void MainWindow::on_actionOpen_triggered()
                 tr("Open SQLite database"),
                 QDir::homePath(),
                 tr("SQLite database (*.sqlite *.db);;All files (*.*)"));
+    if (fileName.isNull())
+        return;
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(fileName);
-    if (!db.open())
-        QMessageBox::critical(this, tr("Error opening database"), db.lastError().text());
-    else
+    if (db.open()) {
         setWindowTitle(QFile(fileName).fileName() + " - Access SQLite");
+        QSqlQuery q;
+        if (q.exec("SELECT name FROM sqlite_master WHERE type='table'  ORDER BY name;")) {
+            while (q.next()) {
+                new QListWidgetItem(q.value(0).toString(), ui->databaseView);
+            }
+        } else {
+            QMessageBox::critical(this, tr("Error querying database"), q.lastError().text());
+        }
+    } else {
+        QMessageBox::critical(this, tr("Error opening database"), db.lastError().text());
+    }
 }
