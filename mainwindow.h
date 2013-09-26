@@ -49,6 +49,7 @@ private slots:
     void closeDatabase();
     void renameTable();
     void deleteTable();
+    void showSchema();
 
 private:
     void connectDatabase(QString &fileName);

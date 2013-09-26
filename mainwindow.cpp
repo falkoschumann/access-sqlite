@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionCloseDatabase, SIGNAL(triggered()), this, SLOT(closeDatabase()));
     connect(ui->actionRenameTable, SIGNAL(triggered()), this, SLOT(renameTable()));
     connect(ui->actionDeleteTable, SIGNAL(triggered()), this, SLOT(deleteTable()));
+    connect(ui->actionShowSchema, SIGNAL(triggered()), this, SLOT(showSchema()));
 }
 
 MainWindow::~MainWindow()
@@ -61,6 +62,8 @@ void MainWindow::showContextMenuForDatabaseView(const QPoint &positionAtWidget)
         QMenu menu(this);
         menu.addAction(ui->actionRenameTable);
         menu.addAction(ui->actionDeleteTable);
+        menu.addSeparator();
+        menu.addAction(ui->actionShowSchema);
         menu.exec(ui->databaseView->viewport()->mapToGlobal(positionAtWidget));
     }
 }
@@ -166,5 +169,18 @@ void MainWindow::deleteTable()
         refreshDatabaseView();
     } else {
         QMessageBox::critical(this, tr("Error deleting table"), query.lastError().text());
+    }
+}
+
+void MainWindow::showSchema()
+{
+    QString tableName = ui->databaseView->selectedItems().at(0)->text();
+    QSqlQuery query;
+    if (query.exec("SELECT sql FROM sqlite_master WHERE type='table' AND name LIKE '" + tableName + "'")) {
+        query.next();
+        // TODO: Show non modal dialog with copyable text area
+        QMessageBox::information(this, "Schema of " + tableName, query.value(0).toString());
+    } else {
+        QMessageBox::critical(this, tr("Error querying database"), query.lastError().text());
     }
 }

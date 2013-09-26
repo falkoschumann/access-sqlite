@@ -151,6 +151,14 @@
     <string>Delete selected table</string>
    </property>
   </action>
+  <action name="actionShowSchema">
+   <property name="text">
+    <string>Show schema...</string>
+   </property>
+   <property name="toolTip">
+    <string>Show schema of selected table</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
