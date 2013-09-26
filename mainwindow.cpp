@@ -30,6 +30,7 @@
 
 #include <QDebug>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -41,14 +42,30 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    connect(ui->databaseView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenuForDatabaseView(QPoint)));
     connect(ui->actionCreateDatabase, SIGNAL(triggered()), this, SLOT(createDatabase()));
     connect(ui->actionOpenDatabase, SIGNAL(triggered()), this, SLOT(openDatabase()));
     connect(ui->actionCloseDatabase, SIGNAL(triggered()), this, SLOT(closeDatabase()));
+    connect(ui->actionRenameTable, SIGNAL(triggered()), this, SLOT(renameTable()));
+    connect(ui->actionDeleteTable, SIGNAL(triggered()), this, SLOT(deleteTable()));
+    connect(ui->actionShowSchema, SIGNAL(triggered()), this, SLOT(showSchema()));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::showContextMenuForDatabaseView(const QPoint &positionAtWidget)
+{
+    if (ui->databaseView->selectedItems().size() > 0) {
+        QMenu menu(this);
+        menu.addAction(ui->actionRenameTable);
+        menu.addAction(ui->actionDeleteTable);
+        menu.addSeparator();
+        menu.addAction(ui->actionShowSchema);
+        menu.exec(ui->databaseView->viewport()->mapToGlobal(positionAtWidget));
+    }
 }
 
 void MainWindow::createDatabase()
@@ -73,7 +90,7 @@ void MainWindow::openDatabase()
         connectDatabase(fileName);
 }
 
-void MainWindow::connectDatabase(QString& fileName)
+void MainWindow::connectDatabase(QString &fileName)
 {
     closeDatabase();
 
@@ -113,12 +130,57 @@ void MainWindow::refreshDatabaseView()
     if (!QSqlDatabase::database().isValid())
         return;
 
-    QSqlQuery q;
-    if (q.exec("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;")) {
-        while (q.next()) {
-            new QListWidgetItem(q.value(0).toString(), ui->databaseView);
+    QSqlQuery query;
+    if (query.exec("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")) {
+        while (query.next()) {
+            new QListWidgetItem(query.value(0).toString(), ui->databaseView);
         }
     } else {
-        QMessageBox::critical(this, tr("Error querying database"), q.lastError().text());
+        QMessageBox::critical(this, tr("Error querying database"), query.lastError().text());
+    }
+}
+
+void MainWindow::renameTable()
+{
+    QString oldTableName = ui->databaseView->selectedItems().at(0)->text();
+    QString newTableName = QInputDialog::getText(this, "Rename table", "Please give the new table name", QLineEdit::Normal, oldTableName);
+    // TODO: check newTableName for empty string if Ok pressed
+    // TODO: rename "Ok" button to "Rename"
+    if (newTableName.isNull())
+        return;
+
+    QSqlQuery query;
+    if (query.exec("ALTER TABLE " + oldTableName + " RENAME TO " + newTableName)) {
+        refreshDatabaseView();
+    } else {
+        QMessageBox::critical(this, tr("Error renaming table"), query.lastError().text());
+    }
+}
+
+void MainWindow::deleteTable()
+{
+    QString tableName = ui->databaseView->selectedItems().at(0)->text();
+    QMessageBox::StandardButton result = QMessageBox::question(this, "Delete table", "Do you really want to delete the table " + tableName + "?");
+    if (result == QMessageBox::No)
+        return;
+
+    QSqlQuery query;
+    if (query.exec("DROP TABLE " + tableName)) {
+        refreshDatabaseView();
+    } else {
+        QMessageBox::critical(this, tr("Error deleting table"), query.lastError().text());
+    }
+}
+
+void MainWindow::showSchema()
+{
+    QString tableName = ui->databaseView->selectedItems().at(0)->text();
+    QSqlQuery query;
+    if (query.exec("SELECT sql FROM sqlite_master WHERE type='table' AND name LIKE '" + tableName + "'")) {
+        query.next();
+        // TODO: Show non modal dialog with copyable text area
+        QMessageBox::information(this, "Schema of " + tableName, query.value(0).toString());
+    } else {
+        QMessageBox::critical(this, tr("Error querying database"), query.lastError().text());
     }
 }
