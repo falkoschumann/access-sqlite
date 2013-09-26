@@ -43,12 +43,14 @@ public:
     ~MainWindow();
 
 private slots:
+    void showContextMenuForDatabaseView(const QPoint &);
     void createDatabase();
     void openDatabase();
     void closeDatabase();
+    void renameTable();
 
 private:
-    void connectDatabase(QString& fileName);
+    void connectDatabase(QString &fileName);
     void refreshDatabaseView();
 
     Ui::MainWindow *ui;

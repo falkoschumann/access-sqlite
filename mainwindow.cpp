@@ -30,6 +30,7 @@
 
 #include <QDebug>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -41,14 +42,25 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    connect(ui->databaseView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenuForDatabaseView(QPoint)));
     connect(ui->actionCreateDatabase, SIGNAL(triggered()), this, SLOT(createDatabase()));
     connect(ui->actionOpenDatabase, SIGNAL(triggered()), this, SLOT(openDatabase()));
     connect(ui->actionCloseDatabase, SIGNAL(triggered()), this, SLOT(closeDatabase()));
+    connect(ui->actionRenameTable, SIGNAL(triggered()), this, SLOT(renameTable()));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::showContextMenuForDatabaseView(const QPoint &position)
+{
+    if (ui->databaseView->selectedItems().size() > 0) {
+        QMenu menu(this);
+        menu.addAction(ui->actionRenameTable);
+        menu.exec(ui->databaseView->viewport()->mapToGlobal(position));
+    }
 }
 
 void MainWindow::createDatabase()
@@ -73,7 +85,7 @@ void MainWindow::openDatabase()
         connectDatabase(fileName);
 }
 
-void MainWindow::connectDatabase(QString& fileName)
+void MainWindow::connectDatabase(QString &fileName)
 {
     closeDatabase();
 
@@ -113,12 +125,29 @@ void MainWindow::refreshDatabaseView()
     if (!QSqlDatabase::database().isValid())
         return;
 
-    QSqlQuery q;
-    if (q.exec("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;")) {
-        while (q.next()) {
-            new QListWidgetItem(q.value(0).toString(), ui->databaseView);
+    QSqlQuery query;
+    if (query.exec("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")) {
+        while (query.next()) {
+            new QListWidgetItem(query.value(0).toString(), ui->databaseView);
         }
     } else {
-        QMessageBox::critical(this, tr("Error querying database"), q.lastError().text());
+        QMessageBox::critical(this, tr("Error querying database"), query.lastError().text());
+    }
+}
+
+void MainWindow::renameTable()
+{
+    QString oldTableName = ui->databaseView->selectedItems().at(0)->text();
+    QString newTableName = QInputDialog::getText(this, "Rename table", "Please give the new table name", QLineEdit::Normal, oldTableName);
+    // TODO: check newTableName for empty string if Ok pressed
+    // TODO: rename "Ok" button to "Rename"
+    if (newTableName.isNull())
+        return;
+
+    QSqlQuery query;
+    if (query.exec("ALTER TABLE " + oldTableName + " RENAME TO " + newTableName)) {
+        refreshDatabaseView();
+    } else {
+        QMessageBox::critical(this, tr("Error renaming table"), query.lastError().text());
     }
 }
