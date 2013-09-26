@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionOpenDatabase, SIGNAL(triggered()), this, SLOT(openDatabase()));
     connect(ui->actionCloseDatabase, SIGNAL(triggered()), this, SLOT(closeDatabase()));
     connect(ui->actionRenameTable, SIGNAL(triggered()), this, SLOT(renameTable()));
+    connect(ui->actionDeleteTable, SIGNAL(triggered()), this, SLOT(deleteTable()));
 }
 
 MainWindow::~MainWindow()
@@ -54,12 +55,13 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::showContextMenuForDatabaseView(const QPoint &position)
+void MainWindow::showContextMenuForDatabaseView(const QPoint &positionAtWidget)
 {
     if (ui->databaseView->selectedItems().size() > 0) {
         QMenu menu(this);
         menu.addAction(ui->actionRenameTable);
-        menu.exec(ui->databaseView->viewport()->mapToGlobal(position));
+        menu.addAction(ui->actionDeleteTable);
+        menu.exec(ui->databaseView->viewport()->mapToGlobal(positionAtWidget));
     }
 }
 
@@ -149,5 +151,20 @@ void MainWindow::renameTable()
         refreshDatabaseView();
     } else {
         QMessageBox::critical(this, tr("Error renaming table"), query.lastError().text());
+    }
+}
+
+void MainWindow::deleteTable()
+{
+    QString tableName = ui->databaseView->selectedItems().at(0)->text();
+    QMessageBox::StandardButton result = QMessageBox::question(this, "Delete table", "Do you really want to delete the table " + tableName + "?");
+    if (result == QMessageBox::No)
+        return;
+
+    QSqlQuery query;
+    if (query.exec("DROP TABLE " + tableName)) {
+        refreshDatabaseView();
+    } else {
+        QMessageBox::critical(this, tr("Error deleting table"), query.lastError().text());
     }
 }

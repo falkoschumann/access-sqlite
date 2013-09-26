@@ -140,7 +140,15 @@
     <string>Rename table...</string>
    </property>
    <property name="toolTip">
-    <string>Rename this table</string>
+    <string>Rename selected table</string>
+   </property>
+  </action>
+  <action name="actionDeleteTable">
+   <property name="text">
+    <string>Delete table...</string>
+   </property>
+   <property name="toolTip">
+    <string>Delete selected table</string>
    </property>
   </action>
  </widget>
