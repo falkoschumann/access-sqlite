@@ -1,5 +1,4 @@
 /*
- * Access SQLite
  * Copyright (c) 2013, Falko Schumann <http://www.muspellheim.de>
  * All rights reserved.
  *
@@ -25,38 +24,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef CREATETABLEDIALOG_H
+#define CREATETABLEDIALOG_H
 
-#include <QMainWindow>
+#include <QDialog>
 
 namespace Ui {
-class MainWindow;
+class CreateTableDialog;
 }
 
-class MainWindow : public QMainWindow
+class CreateTableDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit CreateTableDialog(QWidget *parent = 0);
+    ~CreateTableDialog();
 
 private slots:
-    void showContextMenuForDatabaseView(const QPoint &);
-    void createDatabase();
-    void openDatabase();
-    void closeDatabase();
-    void createTable();
-    void renameTable();
-    void deleteTable();
-    void showSchema();
+    void addColumn();
 
 private:
-    void connectDatabase(QString &fileName);
-    void refreshDatabaseView();
-
-    Ui::MainWindow *ui;
+    Ui::CreateTableDialog *ui;
 };
 
-#endif // MAINWINDOW_H
+#endif // CREATETABLEDIALOG_H

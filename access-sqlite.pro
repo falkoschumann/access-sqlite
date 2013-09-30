@@ -36,12 +36,21 @@ macx {
     TARGET = access-sqlite
 }
 
-SOURCES += main.cpp\
-           mainwindow.cpp
+SOURCES += \
+    main.cpp\
+    mainwindow.cpp \
+    createtabledialog.cpp \
+    addcolumndialog.cpp
 
-HEADERS += mainwindow.h
+HEADERS += \
+    mainwindow.h \
+    createtabledialog.h \
+    addcolumndialog.h
 
-FORMS   += mainwindow.ui
+FORMS += \
+    mainwindow.ui \
+    createtabledialog.ui \
+    addcolumndialog.ui
 
 RESOURCES += \
     access-sqlite.qrc

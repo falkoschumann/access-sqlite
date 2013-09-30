@@ -28,7 +28,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QDebug>
+#include "createtabledialog.h"
+
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
@@ -43,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->databaseView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenuForDatabaseView(QPoint)));
+    connect(ui->createTableButton, SIGNAL(clicked()), this, SLOT(createTable()));
     connect(ui->actionCreateDatabase, SIGNAL(triggered()), this, SLOT(createDatabase()));
     connect(ui->actionOpenDatabase, SIGNAL(triggered()), this, SLOT(openDatabase()));
     connect(ui->actionCloseDatabase, SIGNAL(triggered()), this, SLOT(closeDatabase()));
@@ -138,6 +140,12 @@ void MainWindow::refreshDatabaseView()
     } else {
         QMessageBox::critical(this, tr("Error querying database"), query.lastError().text());
     }
+}
+
+void MainWindow::createTable()
+{
+    CreateTableDialog dialog(this);
+    dialog.exec();
 }
 
 void MainWindow::renameTable()

@@ -1,5 +1,4 @@
 /*
- * Access SQLite
  * Copyright (c) 2013, Falko Schumann <http://www.muspellheim.de>
  * All rights reserved.
  *
@@ -25,38 +24,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#include "createtabledialog.h"
+#include "ui_createtabledialog.h"
 
-#include <QMainWindow>
+#include "addcolumndialog.h"
 
-namespace Ui {
-class MainWindow;
+#include <QPushButton>
+
+CreateTableDialog::CreateTableDialog(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::CreateTableDialog)
+{
+    ui->setupUi(this);
+
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setText("Create table");
+
+    connect(ui->addColumnButton, SIGNAL(clicked()), this, SLOT(addColumn()));
+    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
-class MainWindow : public QMainWindow
+CreateTableDialog::~CreateTableDialog()
 {
-    Q_OBJECT
+    delete ui;
+}
 
-public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
-
-private slots:
-    void showContextMenuForDatabaseView(const QPoint &);
-    void createDatabase();
-    void openDatabase();
-    void closeDatabase();
-    void createTable();
-    void renameTable();
-    void deleteTable();
-    void showSchema();
-
-private:
-    void connectDatabase(QString &fileName);
-    void refreshDatabaseView();
-
-    Ui::MainWindow *ui;
-};
-
-#endif // MAINWINDOW_H
+void CreateTableDialog::addColumn()
+{
+    AddColumnDialog dialog(this);
+    dialog.exec();
+}

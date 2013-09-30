@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>icons/actions/document-new.png</file>
         <file>icons/actions/document-open.png</file>
+        <file>icons/actions/list-add.png</file>
     </qresource>
 </RCC>
