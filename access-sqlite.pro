@@ -40,12 +40,14 @@ SOURCES += \
     main.cpp\
     mainwindow.cpp \
     createtabledialog.cpp \
-    addcolumndialog.cpp
+    addcolumndialog.cpp \
+    columndefinition.cpp
 
 HEADERS += \
     mainwindow.h \
     createtabledialog.h \
-    addcolumndialog.h
+    addcolumndialog.h \
+    columndefinition.h
 
 FORMS += \
     mainwindow.ui \
