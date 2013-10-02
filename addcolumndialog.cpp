@@ -27,6 +27,8 @@
 #include "addcolumndialog.h"
 #include "ui_addcolumndialog.h"
 
+#include "columndefinition.h"
+
 #include <QPushButton>
 
 AddColumnDialog::AddColumnDialog(QWidget *parent) :
@@ -44,4 +46,39 @@ AddColumnDialog::AddColumnDialog(QWidget *parent) :
 AddColumnDialog::~AddColumnDialog()
 {
     delete ui;
+}
+
+ColumnDefinition AddColumnDialog::columnDefinition()
+{
+    ColumnDefinition d;
+    d.setName(ui->name->text());
+    switch (ui->type->currentIndex()) {
+    case ColumnDefinition::IntegerType:
+        d.setType(ColumnDefinition::IntegerType);
+        break;
+    case ColumnDefinition::RealType:
+        d.setType(ColumnDefinition::RealType);
+        break;
+    case ColumnDefinition::TextType:
+        d.setType(ColumnDefinition::TextType);
+        break;
+    case ColumnDefinition::BlobType:
+        d.setType(ColumnDefinition::BlobType);
+        break;
+    }
+    d.setRequired(ui->required->isChecked());
+    d.setDefaultValue(ui->defaultValue->text());
+    switch (ui->indexed->currentIndex()) {
+    case ColumnDefinition::NoIndex:
+        d.setIndexed(ColumnDefinition::NoIndex);
+        break;
+    case ColumnDefinition::IndexWithDuplicatesPossible:
+        d.setIndexed(ColumnDefinition::IndexWithDuplicatesPossible);
+        break;
+    case ColumnDefinition::IndexWithoutDuplicates:
+        d.setIndexed(ColumnDefinition::IndexWithoutDuplicates);
+        break;
+    }
+    d.setAutoincrement(ui->autoincrement->isChecked());
+    return d;
 }

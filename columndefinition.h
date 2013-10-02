@@ -36,17 +36,18 @@ public:
     enum ColumnIndex { NoIndex, IndexWithoutDuplicates, IndexWithDuplicatesPossible };
     
     QString name() const;
-    void setName(QString &name);
+    void setName(const QString &name);
     ColumnType type() const;
     void setType(ColumnType type);
     bool autoincrement() const;
     void setAutoincrement(bool autoincrement);
     QVariant defaultValue() const;
-    void setDefaultValue(QVariant &defaultValue);
-    bool required() const;
-    void setRequired(bool required);
+    void setDefaultValue(const QVariant &defaultValue);
+    bool isRequired() const;
+    void setRequired(bool isRequired);
     ColumnIndex indexed() const;
     void setIndexed(ColumnIndex indexed);
+    QString toSql() const;
 
 private:
     QString m_name;

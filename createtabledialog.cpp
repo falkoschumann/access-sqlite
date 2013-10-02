@@ -28,7 +28,9 @@
 #include "ui_createtabledialog.h"
 
 #include "addcolumndialog.h"
+#include "columndefinition.h"
 
+#include <QDebug>
 #include <QPushButton>
 
 CreateTableDialog::CreateTableDialog(QWidget *parent) :
@@ -52,5 +54,6 @@ CreateTableDialog::~CreateTableDialog()
 void CreateTableDialog::addColumn()
 {
     AddColumnDialog dialog(this);
-    dialog.exec();
+    if (dialog.exec() == QDialog::Accepted)
+        qDebug() << dialog.columnDefinition().toSql();
 }

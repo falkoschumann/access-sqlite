@@ -31,7 +31,7 @@ QString ColumnDefinition::name() const
     return m_name;
 }
 
-void ColumnDefinition::setName(QString &name)
+void ColumnDefinition::setName(const QString &name)
 {
     m_name = name;
 }
@@ -61,12 +61,12 @@ QVariant ColumnDefinition::defaultValue() const
     return m_defaultValue;
 }
 
-void ColumnDefinition::setDefaultValue(QVariant &defaultValue)
+void ColumnDefinition::setDefaultValue(const QVariant &defaultValue)
 {
     m_defaultValue = defaultValue;
 }
 
-bool ColumnDefinition::required() const
+bool ColumnDefinition::isRequired() const
 {
     return m_required;
 }
@@ -84,4 +84,45 @@ ColumnDefinition::ColumnIndex ColumnDefinition::indexed() const
 void ColumnDefinition::setIndexed(ColumnIndex indexed)
 {
     m_indexed = indexed;
+}
+
+QString ColumnDefinition::toSql() const
+{
+    // TODO primary key and/or autoincrement
+    QString sql;
+    sql = name() + " ";
+    switch (type()) {
+    case IntegerType:
+        sql += "INTEGER";
+        if (!defaultValue().isNull())
+            sql += " DEFAULT " + defaultValue().toString();
+        break;
+    case RealType:
+        sql += "REAL";
+        if (!defaultValue().isNull())
+            sql += " DEFAULT " + defaultValue().toString();
+        break;
+    case TextType:
+        sql += "TEXT";
+        if (!defaultValue().isNull())
+            sql += " DEFAULT '" + defaultValue().toString() + "'";
+        break;
+    case BlobType:
+        sql += "BLOB";
+        break;
+    }
+    if (isRequired())
+        sql += " NOT NULL";
+    switch (indexed()) {
+    case NoIndex:
+        break;
+    case IndexWithDuplicatesPossible:
+        sql += "???";
+        break;
+    case IndexWithoutDuplicates:
+        sql += " UNIQUE";
+        break;
+    }
+
+    return sql;
 }

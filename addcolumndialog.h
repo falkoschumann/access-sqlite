@@ -29,6 +29,8 @@
 
 #include <QDialog>
 
+class ColumnDefinition;
+
 namespace Ui {
 class AddColumnDialog;
 }
@@ -40,6 +42,7 @@ class AddColumnDialog : public QDialog
 public:
     explicit AddColumnDialog(QWidget *parent = 0);
     ~AddColumnDialog();
+    ColumnDefinition columnDefinition();
 
 private:
     Ui::AddColumnDialog *ui;

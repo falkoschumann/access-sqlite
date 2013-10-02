@@ -56,3 +56,7 @@ FORMS += \
 
 RESOURCES += \
     access-sqlite.qrc
+
+OTHER_FILES += \
+    README.md \
+    LICENSE.txt
